@@ -1,6 +1,8 @@
 Spark - a Sinatra inspired web framework
 ==============================================
 
+FORK of the original spark to get it working under JDK 1.6.
+
 NEWS: Spark is now available on Maven central!!! :
 
 ```xml
