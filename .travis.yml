@@ -1,5 +1,12 @@
 language: java
 jdk:
-  - openjdk6
-
-
+- openjdk6
+before_install: git clone -b travis `git config --get remote.origin.url` target/travis
+script: mvn deploy --settings target/travis/settings.xml
+branches:
+  only:
+  - master
+env:
+  global:
+  - secure: M/7gt2NBXrRStU7f9M3pi+57a/Y1ITbgnmY6gLHSA0FBxmJrPDvzcc8C/LlL+JqxMBCt+FptDleI8CVOlMS01260kZJ6lhra8eTlJujQeGIWUONnAe5fYX14EAIiPqfpo2ep/9cbDh4weMstELoBedDYDFFTDoqWakOvw3oJz+g=
+  - secure: ArXt8tFCvmjclYUw3go3OXqHJmr5u2cvA51RWriEmi8d1LpQCiG0Q3/iwOnKmoqkw353FtwpbLN3mueFBrteATTi++uzy/l/m3G6VDXKZzvpnK0ATDh92jthZjARK3cBV8X3SJSjq3XNckNZzRPapnx2vFCF2BMplTn9ykQEF8U=
