@@ -6,12 +6,12 @@
           <artifactId>oss-parent</artifactId>
           <version>7</version>
         </parent>
-	<groupId>com.sparkjava</groupId>
-	<artifactId>spark-core</artifactId>
+	<groupId>com.github.codingricky</groupId>
+	<artifactId>spark-core-16</artifactId>
 	<packaging>jar</packaging>
 	<version>1.1-SNAPSHOT</version>
 	<name>Spark</name>
-        <description>A Sinatra inspired java web framework</description>
+        <description>A fork of Spark to get it working under 1.6, Sinatra inspired java web framework</description>
 	<url>http://www.sparkjava.com</url>
         <licenses>
           <license>
@@ -21,9 +21,9 @@
           </license>
         </licenses>
         <scm>
-          <connection>scm:git:git@github.com:perwendel/spark.git</connection>
-          <developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
-          <url>scm:git:git@github.com:perwendel/spark.git</url>
+          <connection>scm:git:git@github.com:codingricky/spark.git</connection>
+          <developerConnection>scm:git:git@github.com:codingricky/spark.git</developerConnection>
+          <url>scm:git:git@github.com:codingricky/spark.git</url>
         </scm>
         <developers>
         </developers>
@@ -113,8 +113,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<optimize>true</optimize>
 					<debug>true</debug>
 				</configuration>
