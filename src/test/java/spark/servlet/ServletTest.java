@@ -1,19 +1,18 @@
 package spark.servlet;
 
-import static spark.util.SparkTestUtil.sleep;
 import junit.framework.Assert;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.bio.SocketConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import spark.TAccess;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import static spark.util.SparkTestUtil.sleep;
 
 public class ServletTest {
 
@@ -34,10 +33,10 @@ public class ServletTest {
         testUtil = new SparkTestUtil(PORT);
 
         final Server server = new Server();
-        ServerConnector connector = new ServerConnector(server);
+        SocketConnector connector = new SocketConnector();
 
         // Set some timeout options to make debugging easier.
-        connector.setIdleTimeout(1000 * 60 * 60);
+        connector.setMaxIdleTime(1000 * 60 * 60);
         connector.setSoLingerTime(-1);
         connector.setPort(PORT);
         server.setConnectors(new Connector[]{connector});

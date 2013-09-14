@@ -16,31 +16,32 @@
  */
 package spark.webserver;
 
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
 /**
  * Spark server implementation
- * 
+ *
  * @author Per Wendel
  */
 class SparkServerImpl implements SparkServer {
 
     private static final String NAME = "Spark";
     private Handler handler;
-    private Server server;
+    private Server server = new Server();
 
     public SparkServerImpl(Handler handler) {
         this.handler = handler;
@@ -49,12 +50,12 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite(String host, int port, String keystoreFile,
-            String keystorePassword, String truststoreFile,
-            String truststorePassword, String staticFilesFolder,
-            String externalFilesFolder) {
-        
-        ServerConnector connector;
-        
+                       String keystorePassword, String truststoreFile,
+                       String truststorePassword, String staticFilesFolder,
+                       String externalFilesFolder) {
+
+        SocketConnector connector;
+
         if (keystoreFile == null) {
             connector = createSocketConnector();
         } else {
@@ -63,13 +64,12 @@ class SparkServerImpl implements SparkServer {
         }
 
         // Set some timeout options to make debugging easier.
-        connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
+        connector.setMaxIdleTime((int) TimeUnit.HOURS.toMillis(1));
         connector.setSoLingerTime(-1);
         connector.setHost(host);
         connector.setPort(port);
 
-        server = connector.getServer();
-        server.setConnectors(new Connector[] { connector });
+        server.setConnectors(new Connector[]{connector});
 
         // Handle static file routes
         if (staticFilesFolder == null && externalFilesFolder == null) {
@@ -77,10 +77,10 @@ class SparkServerImpl implements SparkServer {
         } else {
             List<Handler> handlersInList = new ArrayList<Handler>();
             handlersInList.add(handler);
-            
+
             // Set static file location
             setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
-            
+
             // Set external static file location
             setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
 
@@ -88,8 +88,8 @@ class SparkServerImpl implements SparkServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
-        
-        
+
+
         try {
             System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
             System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
@@ -119,17 +119,16 @@ class SparkServerImpl implements SparkServer {
     /**
      * Creates a secure jetty socket connector. Keystore required, truststore
      * optional. If truststore not specifed keystore will be reused.
-     * 
-     * @param keystoreFile The keystore file location as string
-     * @param keystorePassword the password for the keystore
-     * @param truststoreFile the truststore file location as string, leave null to reuse keystore
+     *
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param truststoreFile     the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword the trust store password
-     * 
      * @return a secure socket connector
      */
-    private static ServerConnector createSecureSocketConnector(String keystoreFile,
-            String keystorePassword, String truststoreFile,
-            String truststorePassword) {
+    private static SocketConnector createSecureSocketConnector(String keystoreFile,
+                                                               String keystorePassword, String truststoreFile,
+                                                               String truststorePassword) {
 
         SslContextFactory sslContextFactory = new SslContextFactory(
                 keystoreFile);
@@ -138,21 +137,21 @@ class SparkServerImpl implements SparkServer {
             sslContextFactory.setKeyStorePassword(keystorePassword);
         }
         if (truststoreFile != null) {
-            sslContextFactory.setTrustStorePath(truststoreFile);
+            sslContextFactory.setTrustStore(truststoreFile);
         }
         if (truststorePassword != null) {
             sslContextFactory.setTrustStorePassword(truststorePassword);
         }
-        return new ServerConnector(new Server(), sslContextFactory);
+        return new SslSocketConnector(sslContextFactory);
     }
 
     /**
      * Creates an ordinary, non-secured Jetty server connector.
-     * 
+     *
      * @return - a server connector
      */
-    private static ServerConnector createSocketConnector() {
-        return new ServerConnector(new Server());
+    private static SocketConnector createSocketConnector() {
+        return new SocketConnector();
     }
 
     /**
@@ -163,11 +162,11 @@ class SparkServerImpl implements SparkServer {
             ResourceHandler resourceHandler = new ResourceHandler();
             Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
             resourceHandler.setBaseResource(staticResources);
-            resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+            resourceHandler.setWelcomeFiles(new String[]{"index.html"});
             handlersInList.add(resourceHandler);
         }
     }
-    
+
     /**
      * Sets external static file location if present
      */
@@ -177,7 +176,7 @@ class SparkServerImpl implements SparkServer {
                 ResourceHandler externalResourceHandler = new ResourceHandler();
                 Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
                 externalResourceHandler.setBaseResource(externalStaticResources);
-                externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
+                externalResourceHandler.setWelcomeFiles(new String[]{"index.html"});
                 handlersInList.add(externalResourceHandler);
             } catch (IOException exception) {
                 exception.printStackTrace(); // NOSONAR
@@ -185,5 +184,5 @@ class SparkServerImpl implements SparkServer {
             }
         }
     }
-    
+
 }
