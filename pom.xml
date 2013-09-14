@@ -8,7 +8,7 @@
 	<groupId>com.github.codingricky</groupId>
 	<artifactId>spark-core-16</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1</version>
+	<version>1.2-SNAPSHOT</version>
 	<name>Spark</name>
         <description>A fork of Spark to get it working under JDK 1.6</description>
 	<url>http://www.sparkjava.com</url>
