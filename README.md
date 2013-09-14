@@ -1,13 +1,16 @@
-FORK of the original Spark (a Sinatra inspired web framework) to work under JDK 1.6
+FORK of the original Spark to work under JDK 1.6
 ===================================================================================
+
+Spark - a Sinatra inspired web framework
+========================================
 
 NEWS: Spark is now available on Maven central!!! :
 
 ```xml
     <dependency>
-        <groupId>com.sparkjava</groupId>
-        <artifactId>spark-core</artifactId>
-        <version>1.0</version>
+        <groupId>com.github.codingricky</groupId>
+        <artifactId>spark-core-16</artifactId>
+        <version>1.1</version>
     </dependency>
 ```
 
